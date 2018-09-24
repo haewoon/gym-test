@@ -77,7 +77,7 @@ class TestEnv(gym.Env):
         p, s, r, d= transitions[i]
         self.s = s
         self.lastaction=a
-        return (s, r, d, {"prob" : p})
+        return (s, r, d, None)
 
     def reset(self):
         self.s = self.categorical_sample(self.isd, self.np_random)
