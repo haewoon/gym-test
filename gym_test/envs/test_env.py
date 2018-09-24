@@ -12,14 +12,14 @@ from six import StringIO, b
 LEFT = 0
 RIGHT = 1
 
-class TestEnv(gym.Env):
+class TestEnv(discrete.DiscreteEnv):
 
     metadata = {'render.modes': ['human', 'ansi']}
 
     def __init__(self):
-        desc = ["SFFFFFFG"]
+        desc = "SFFFFFFFFG"
         self.desc = desc = np.asarray(desc,dtype='c')
-        self.nrow, self.ncol = nrow, ncol = desc.shape
+        self.ncol = ncol = len(desc)
         self.reward_range = (0, 1)
 
         nA = 2
@@ -42,7 +42,7 @@ class TestEnv(gym.Env):
             for a in range(2):
                 li = P[s][a]
                 letter = desc[col]
-                if letter in b'G':
+                if letter == b'G':
                     li.append((1.0, s, 0, True))
                 else:
                     newcol = inc(col, a)
@@ -52,20 +52,20 @@ class TestEnv(gym.Env):
                     rew = float(newletter == b'G')
                     li.append((1.0, newstate, rew, done))
 
-        super(FrozenLakeEnv, self).__init__(nS, nA, P, isd)
+        super(TestEnv, self).__init__(nS, nA, P, isd)
 
     def render(self, mode='human'):
         outfile = StringIO() if mode == 'ansi' else sys.stdout
 
         col = self.s % self.ncol
         desc = self.desc.tolist()
-        desc = [[c.decode('utf-8') for c in line] for line in desc]
+        desc = [c.decode('utf-8') for c in desc]
         desc[col] = utils.colorize(desc[col], "red", highlight=True)
         if self.lastaction is not None:
             outfile.write("  ({})\n".format(["Left","Right"][self.lastaction]))
         else:
             outfile.write("\n")
-        outfile.write("\n".join(''.join(line) for line in desc)+"\n")
+        outfile.write(''.join(desc)+"\n")
 
         if mode != 'human':
             return outfile
