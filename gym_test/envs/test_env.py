@@ -1,10 +1,8 @@
 # simplified version of Frozen Lake v0.
 import gym
 from gym import error, spaces, utils
-from gym.utils import seeding
 from gym import utils
 from gym.envs.toy_text import discrete
-from gym.utils import seeding
 
 import numpy as np
 import sys
@@ -14,18 +12,12 @@ LEFT = 0
 RIGHT = 1
 
 class TestEnv(gym.Env):
-
     metadata = {'render.modes': ['human', 'ansi']}
 
-
-
     def __init__(self):
-        desc = "SFFFFFFFFG"
-
-        self.desc = desc = np.asarray(desc,dtype='c')
+        self.desc = desc = np.asarray("SFFFFFFFFG",dtype='c')
         self.ncol = ncol = len(desc)
         self.reward_range = (0, 1)
-        self.np_random, self.seed = seeding.np_random(None)
 
         self.nA = 2
         self.nS = ncol
@@ -48,39 +40,25 @@ class TestEnv(gym.Env):
         for col in range(ncol):
             s = col
             for a in range(2):
-                li = self.P[s][a]
                 letter = desc[col]
                 if letter == b'G':
-                    li.append((1.0, s, 0, True))
+                    self.P[s][a] = (s, 0, True)
                 else:
                     newcol = inc(col, a)
                     newstate = newcol
                     newletter = desc[newcol]
                     done = bytes(newletter) == b'G'
                     rew = float(newletter == b'G')
-                    li.append((1.0, newstate, rew, done))
-
-        # super(TestEnv, self).__init__(nS, nA, P, isd)
-
-    def categorical_sample(self, prob_n, np_random):
-        """
-        Sample from categorical distribution
-        Each row specifies class probabilities
-        """
-        prob_n = np.asarray(prob_n)
-        csprob_n = np.cumsum(prob_n)
-        return (csprob_n > np_random.rand()).argmax()
+                    self.P[s][a] = (newstate, rew, done)
 
     def step(self, a):
-        transitions = self.P[self.s][a]
-        i = self.categorical_sample([t[0] for t in transitions], self.np_random)
-        p, s, r, d= transitions[i]
+        s, r, d = self.P[self.s][a]
         self.s = s
         self.lastaction=a
         return (s, r, d, None)
 
     def reset(self):
-        self.s = self.categorical_sample(self.isd, self.np_random)
+        self.s = np.random.choice(self.nS, p=self.isd)
         self.lastaction=None
         return self.s
 
