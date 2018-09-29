@@ -89,27 +89,32 @@ class Maze2dEnv(gym.Env):
                 s = to_s(row, col)
                 for a in range(4):
                     letter = self.desc[row, col]
-                    if letter == b'G':
-                        self.P[s][a] = (s, 0, True)
+                    if letter == b'X':
+                        self.P[s][a] = [(1.0, s, 0, True)]
                     else:
                         newrow, newcol = inc(row, col, a)
                         newstate = to_s(newrow, newcol)
                         newletter = self.desc[newrow, newcol]
-                        done = bytes(newletter) == b'G'
+                        done = (bytes(newletter) == b'G')
                         if newletter == b'G':
                             rew = 1.0
                         else:
                             rew = -0.1 # at every time t, the reward is -0.1. 
-                        self.P[s][a] = (newstate, rew, done)
+                        self.P[s][a] = [(1.0, newstate, rew, done)]
+
+        # print (self.P)
 
     def step(self, a):
-        s, r, d = self.P[self.s][a]
+        chosen_index = np.random.choice(len(self.P[self.s][a]), 
+                                        1, p=[e[0] for e in self.P[self.s][a]])[0]
+        prob, s, r, d = self.P[self.s][a][chosen_index]
         self.s = s
         self.lastaction=a
         self.t += 1
-        return (s, r, d, None)
+        return (s, r, d, {"prob" : prob})
 
     def reset(self):
+        self.t = 0
         self.s = np.random.choice(self.nS, p=self.isd)
         self.lastaction=None
         return self.s

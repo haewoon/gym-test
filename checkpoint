@@ -1,0 +1,2 @@
+model_checkpoint_path: "qnet_model_W.ckpt"
+all_model_checkpoint_paths: "qnet_model_W.ckpt"
