@@ -11,7 +11,7 @@ from six import StringIO, b
 LEFT = 0
 RIGHT = 1
 
-class TestEnv(gym.Env):
+class Maze1dEnv(gym.Env):
     metadata = {'render.modes': ['human', 'ansi']}
 
     def __init__(self):
@@ -26,7 +26,7 @@ class TestEnv(gym.Env):
         self.observation_space = spaces.Discrete(self.nS)
 
         self.isd = np.array(desc == b'S').astype('float64').ravel() # array([1., 0., 0., 0., 0., 0., 0., 0.])
-        self.isd /= self.isd.sum()
+        self.isd /= self.isd.sum() # initial state distribution
 
         self.P = {s : {a : [] for a in range(self.nA)} for s in range(self.nS)}
 

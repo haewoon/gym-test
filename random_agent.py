@@ -6,7 +6,8 @@ import time
 # env_ids = [env_spec.id for env_spec in envs.registry.all()]
 # print(env_ids)
 
-env = gym.make('haewoon-test-v0')
+# env = gym.make('haewoon-maze1d-v0')
+env = gym.make('haewoon-maze2d-v0')
 env.reset()
 env.render()
 
